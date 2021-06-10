@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, Params } from '@angular/router';
+import { ActivatedRoute, Params, Router } from '@angular/router';
 import { RecipeService } from '../recipe.service';
 
 @Component({
@@ -18,7 +18,8 @@ export class RecipeEditComponent implements OnInit {
   }
 
   constructor(private route: ActivatedRoute,
-    private recipeService: RecipeService) { }
+    private recipeService: RecipeService,
+    private router: Router) { }
 
   ngOnInit() {
     this.route.params
@@ -32,7 +33,21 @@ export class RecipeEditComponent implements OnInit {
   }
 
   onSubmit() {
-    console.log(this.recipeForm);
+    // const newRecipe = new Recipe(
+    //   this.recipeForm.value['name'],
+    //   this.recipeForm.value['description'],
+    //   this.recipeForm.value['imagePath'],
+    //   this.recipeForm.value['ingredients']);
+    // This going with newRecipe as second argumen, but it can be replaced with only 
+    // with this.recipeForm.value as a second argument or first in addRecipe method.
+    if(this.editMode) {
+      this.recipeService.updateRecipe(this.id, this.recipeForm.value);
+    } else {
+      this.recipeService.addRecipe(this.recipeForm.value);
+    }
+    this.onCancel(); /* We call this method here because we want 
+    after we click on save button, we want to redirect to details page 
+    just like after we click on Cancel.*/
   }
 
   onAddIngredient() {
@@ -45,6 +60,16 @@ export class RecipeEditComponent implements OnInit {
         ])
       })
     )
+  }
+
+  onDeleteIngredient(index: number) {
+    (<FormArray>this.recipeForm.get('ingredients')).removeAt(index);
+  }
+
+  onCancel() {
+    this.router.navigate(['../'], {relativeTo: this.route});
+    // ['../'] up one level, and with ActivatedRoute injected before in constructor,
+    //         this method knowes current route.
   }
 
   private initForm() {
