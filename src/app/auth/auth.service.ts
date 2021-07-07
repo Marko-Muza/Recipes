@@ -93,6 +93,7 @@ export class AuthService {
     logout() {
         this.user.next(null);
         this.router.navigate(['/auth']);
+        localStorage.removeItem('userData'); // To not stay logged in if page gets reloaded.
     }
 
     private handleAuthentication (email: string, userId: string, token: string, expiresIn: number) {
