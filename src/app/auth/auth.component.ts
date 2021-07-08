@@ -50,4 +50,8 @@ export class AuthComponent {
        
         form.reset();
     }
+
+    onHandleSigninError() {
+        this.error = null;
+    }
 }
